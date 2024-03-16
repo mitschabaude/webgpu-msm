@@ -1,4 +1,5 @@
 import { compute_msm } from "./submission.js";
+// just a basic sanity check that the submission code can run
 
 // test vector
 let p = {
