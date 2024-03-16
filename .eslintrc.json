@@ -13,7 +13,10 @@
   "rules": {
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
-    "react/prop-types": "off"
+    "react/prop-types": "off",
+    "prefer-const": "off",
+    "no-redeclare": "off", // TS checks this properly, eslint is confused about types and values having the same name
+    "no-unused-labels": "warn" // need for custom build annotation
   },
   "settings": {
     "react": {
