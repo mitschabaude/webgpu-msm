@@ -14,7 +14,12 @@ async function compute_msm(
   let points = await pointsFromBigint(inputPoints as BigIntPoint[]);
 
   // compute msm
-  let { result } = await BLS12377.Parallel.msm(
+  // IMPORTANT: we use `msmUnsafe`, which doesn't handle all edge cases of inputs, but is faster.
+  // this is fine in the typical application scenario where the points are guaranteed to have been
+  // created in a pseudo-random way and observe no simple algebraic relationships with each other.
+  // if exhibiting these edge cases in tests, as a fallback we can replace the line below with
+  // let { result } = await BLS12377.Parallel.msm(
+  let { result } = await BLS12377.Parallel.msmUnsafe(
     scalars,
     points,
     inputScalars.length
