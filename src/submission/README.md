@@ -1,13 +1,30 @@
 # montgomery: Fast MSM in WebAssembly
 
-_by Gregor Mitscha-Baude_
+_submitted to Zprize '23, by Gregor Mitscha-Baude_
 
 This repo contains 2 submissions:
 
 - `submission.ts` for the main prize as originally intended: MSM over [Aleo's twisted edwards curve](https://docs.rs/ark-ed-on-bls12-377/latest/ark_ed_on_bls12_377) over the scalar field of BLS12-377.
 - `submission-bls377.ts` for the side prize that was introduced midway through the competition: MSM over [BLS12-377](https://neuromancer.sk/std/bls/BLS12-377), a short Weierstrass curve.
 
-To get started, see the next section on [using the submission](#using-the-submission).
+To get started, see the below section on [using the submission](#using-the-submission).
+
+## Summary and results
+
+- We use multi-threaded Wasm and JS. No WebGPU.
+- The submission further builds on the library I used for Zprize '22. It significantly extends that library:
+  - Last year's MSM, based on batch-affine additions, was extended to support a wide range of curves from the same code base, e.g. BLS12-377, BLS12-381 and Pallas.
+  - Added a second MSM which should essentially support all elliptic curves whatsoever (the required interface is just add, double, negate, zero). We use this for the twisted edwards curve.
+- Seamless multi-threading support for both Node.js and the web. A thread pool can be started and stopped with any number of workers (i.e. `startThreads(8)`), but parallel implementations like our MSMs work in any case, and gracefully fall back to single-threaded execution if no threads have been started.
+  - Notably, all complexity, like creation of wasm modules, providing workers with the right wasm code to run, and even the inclusion of the worker's source code, is fully handled internally. So this is usable as a plain JS library with a single import and no extra files for workers and wasm that have to be included, as is common in other libraries.
+- WebAssembly code is defined entirely from TS and the binary is generated at runtime, using my own [wasmati](https://github.com/zksecurity/wasmati) library - which emerged from Zprize '22.
+- The submission is intended to form the basis for `montgomery`, a super-fast and extensible library for client-side cryptography, which I will publish to npm and maintain going forward.
+
+**Performance**. Thanks to multi-threading and some other improvements we consistently observe > 5x speedup over last year's Zprize results (on the same curve). The new (~256-bit) twisted edwards implementation exhibits performance very similar to ~256-bit Weierstrass curves with batched-affine additions, like Pallas. It is significantler faster than the larger BLS12-377 and last year's BLS12-381.
+
+Example: On my laptop, a 2^16-sized twisted edwards MSM takes 80ms.
+
+**Memory**. The twisted edwards MSM has much lighter memory usage and currently works for input sizes up to 2^21. Similarly, memory usage for Weierstrass curves was improved, so that BLS12-377 works for inputs up to size 2^20. We expect that both of these can be increased by another 2-4 factor in the future.
 
 ## Using the submission
 
