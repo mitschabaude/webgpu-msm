@@ -1,0 +1,51 @@
+{
+  "name": "montgomery",
+  "version": "0.3.1",
+  "description": "Fast implementation of multi-scalar multiplication in WebAssembly",
+  "main": "./build/src/index.js",
+  "type": "module",
+  "types": "./build/src/index.d.ts",
+  "exports": {
+    "types": "./build/src/index.d.ts",
+    "default": "./build/src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mitschabaude/montgomery"
+  },
+  "files": [
+    "src",
+    "build",
+    "README.md",
+    "NOTICE"
+  ],
+  "scripts": {
+    "watch": "tsc -w",
+    "build": "tsc",
+    "build:web": "tsc -p tsconfig.web.json && node build/web/scripts/build/build-web.js src/concrete/ed-on-bls12-377.ts",
+    "start": "npm run build && ./run scripts/run-msm-pasta.ts",
+    "start-web": "npm run build && ./run-in-browser scripts/run-msm-pasta.ts",
+    "evaluate": "npm run build && ./run scripts/run-msm-pasta.ts 16 16 --evaluate",
+    "test": "npm run build && node --test build/src/**/*.test.js build/src/*.test.js",
+    "test-msm": "npm run build && ./run src/msm.test.ts",
+    "benchmark": "node --loader=ts-node/esm scripts/field-benchmarks/pallas.ts",
+    "benchmark-377": "node --loader=ts-node/esm scripts/field-benchmarks/377.ts",
+    "benchmark-381": "node --loader=ts-node/esm scripts/field-benchmarks/381.ts",
+    "prepublishOnly": "npm run clean && npm run build",
+    "clean": "rm -rf build"
+  },
+  "keywords": [],
+  "author": "Gregor Mitscha-Baude",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "wasmati": "^0.2.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.1",
+    "prettier": "^3.1.1",
+    "source-map-support": "^0.5.21",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "wabt": "^1.0.29"
+  }
+}
