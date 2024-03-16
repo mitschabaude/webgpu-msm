@@ -7,18 +7,20 @@ This repo contains 2 submissions:
 - `submission.ts` for the main prize as originally intended: MSM over [Aleo's twisted edwards curve](https://docs.rs/ark-ed-on-bls12-377/latest/ark_ed_on_bls12_377) over the scalar field of BLS12-377.
 - `submission-bls377.ts` for the side prize that was introduced midway through the competition: MSM over [BLS12-377](https://neuromancer.sk/std/bls/BLS12-377), a short Weierstrass curve.
 
+To get started, see the next section on [using the submission](#using-the-submission).
+
 ## Using the submission
 
 To run the following commands, first switch into the `src/submission` directory (same directory as this README). Install npm dependencies.
 
-```
+```sh
 cd src/submission
 npm i
 ```
 
 A single command builds both submissions, such that they can be included into the main test harness:
 
-```
+```sh
 npm run build-submission
 ```
 
@@ -52,6 +54,8 @@ Having a separate build step for the submission code enables us to keep some cus
 
 - The submission currently does not work in Firefox (due to use of `Atomics.waitAsync`) and was not tested / is not expected to work in Safari or any other browser besides Chrome. I want to fix this in the near future to make the library more usable, but the prize was specifically only targeting Chrome 115.
 
+- Due to time constraints, the submission only supports points in bigint format. This is actually a shame because the conversion from bigint takes a significant portion of time. Better results can be observed in all of our [internal tests](#internal-tests-and-scripts) which usually generate random points directly in the same wasm memory as the submission code, and so don't exhibit any transformation overhead.
+
 ## Direct testing of both submissions
 
 In addition to integration with the test harness, there are various tests to run directly from the submission folder.
@@ -63,14 +67,14 @@ Two simple tests test the submission's `compute_msm()` interface directly:
 
 After having done `npm run build`, the `./run` script can be pointed at either of these to run it in Node.js:
 
-```
+```sh
 > ./run submission-test-bls377.ts
 ok
 ```
 
 They can also be run in Chrome by calling the `./run-in-browser` script:
 
-```
+```sh
 > ./run-in-browser submission-test-bls377.ts
 running in the browser: build/web/submission-test-bls377.js
 Server is running on: http://localhost:8000
@@ -83,3 +87,21 @@ This just serves a web build of the script locally, so upon navigating to http:/
 There are plenty of scripts (in `/scripts`) and unit/integration tests (`.test.ts` files) to test or benchmark various aspects of this library on various curves and finite fields. All of them can be run with `./run`, and most will also work in the browser with `./run-in-browser`.
 
 To run all `.test.ts` tests, you can also use `npm test`. (Note: at the time of writing, there are two known failing test cases unrelated to this submission.) Check out other scripts in `package.json` - they are all expected to work.
+
+To benchmark the submitted MSMs on a given number of points and using a given number of threads, I used the following scripts. They run the target multiple times and report mean and deviation of 10 runs (after 5 warmup runs), as well as detailed time logging of steps in the MSM:
+
+```sh
+# twisted edwards MSM on 2^18 random points with 16 threads
+> ./run scripts/run-msm-ed-377.ts 18 16 --evaluate
+
+...
+msm (n=18)... 322ms ± 8ms
+```
+
+```sh
+# bls12-377 MSM on 2^16 random points with 16 threads
+> ./run scripts/run-msm-377.ts 16 8 --evaluate
+
+...
+msm (n=16)... 122ms ± 3ms
+```
