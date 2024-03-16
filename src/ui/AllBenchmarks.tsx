@@ -4,13 +4,11 @@ import {
   bigIntToU32Array,
   bigIntsToBufferLE,
   generateRandomFields,
+  generateRandomScalars,
 } from "../reference/webgpu/utils";
 import { BigIntPoint, U32ArrayPoint } from "../reference/types";
 import {
-  webgpu_compute_msm,
   wasm_compute_msm,
-  webgpu_pippenger_msm,
-  webgpu_best_msm,
   wasm_compute_msm_parallel,
   wasm_compute_msm_parallel_buffer,
 } from "../reference/reference";
@@ -153,7 +151,7 @@ export const AllBenchmarks: React.FC = () => {
       const pointsBufferLE = bigIntsToBufferLE(xyArray, 256);
       setBufferPoints(pointsBufferLE);
 
-      const newScalars = generateRandomFields(inputSize);
+      const newScalars = generateRandomScalars(inputSize);
       setBigIntScalars(newScalars);
       const newU32Scalars = newScalars.map((scalar) =>
         bigIntToU32Array(scalar)
@@ -185,26 +183,6 @@ export const AllBenchmarks: React.FC = () => {
       </div>
 
       <Benchmark
-        name={"Pippenger WebGPU MSM"}
-        disabled={disabledBenchmark}
-        baseAffinePoints={baseAffineBigIntPoints}
-        scalars={bigIntScalars}
-        expectedResult={expectedResult}
-        msmFunc={webgpu_pippenger_msm}
-        postResult={postResult}
-      />
-      <Benchmark
-        name={"Naive WebGPU MSM"}
-        disabled={disabledBenchmark}
-        // baseAffinePoints={u32Points}
-        // scalars={u32Scalars}
-        baseAffinePoints={baseAffineBigIntPoints}
-        scalars={bigIntScalars}
-        expectedResult={expectedResult}
-        msmFunc={webgpu_compute_msm}
-        postResult={postResult}
-      />
-      <Benchmark
         name={"Aleo Wasm: Single Thread"}
         disabled={disabledBenchmark}
         baseAffinePoints={baseAffineBigIntPoints}
@@ -230,16 +208,6 @@ export const AllBenchmarks: React.FC = () => {
         expectedResult={expectedResult}
         msmFunc={wasm_compute_msm_parallel_buffer}
         postResult={postResult}
-      />
-      <Benchmark
-        name={"Our Best WebGPU MSM"}
-        disabled={disabledBenchmark}
-        baseAffinePoints={baseAffineBigIntPoints}
-        scalars={bigIntScalars}
-        expectedResult={expectedResult}
-        msmFunc={webgpu_best_msm}
-        postResult={postResult}
-        bold={true}
       />
       <Benchmark
         name={"Your MSM"}
