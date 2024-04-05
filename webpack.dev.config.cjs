@@ -19,7 +19,7 @@ const config = {
     rules: [
       {
         test: /\.(ts|js)x?$/i,
-        exclude: /node_modules/,
+        exclude: [/node_modules/, /src\/submission/],
         use: {
           loader: "babel-loader",
           options: {
