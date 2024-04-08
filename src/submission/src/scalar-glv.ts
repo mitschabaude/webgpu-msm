@@ -61,7 +61,7 @@ async function createGlvScalarWasm({
   lambda: bigint;
   w: number;
 }) {
-  const { n } = montgomeryParams(q, w, 1);
+  const { n, nPackedBytes } = montgomeryParams(q, w, 1);
   const { decompose, n0, maxBits } = glvGeneral(q, lambda, w, n);
   let memSize = 1 << 14;
   let wasmMemory = importMemory({ min: memSize, max: memSize, shared: true });
@@ -69,8 +69,8 @@ async function createGlvScalarWasm({
   let module = Module({
     exports: {
       decompose,
-      fromPackedBytesSmall: fromPackedBytes(w, n0),
-      fromPackedBytes: fromPackedBytes(w, n),
+      fromPackedBytesSmall: fromPackedBytes(w, n0, Math.ceil(maxBits / 8)),
+      fromPackedBytes: fromPackedBytes(w, n, nPackedBytes),
       extractBitSlice: extractBitSlice(w, n0),
       memory: wasmMemory,
       dataOffset: global(Const.i32(0)),
@@ -166,8 +166,8 @@ async function createSpecialGlvScalar(q: bigint, lambda: bigint, w: number) {
     exports: {
       decompose,
       decomposeNoMsb,
-      fromPackedBytes: fromPackedBytes(w, n),
-      fromPackedBytesDouble: fromPackedBytes(w, 2 * n),
+      fromPackedBytes: fromPackedBytes(w, n, nPackedBytes),
+      fromPackedBytesDouble: fromPackedBytes(w, 2 * n, 2 * nPackedBytes),
       toPackedBytes: toPackedBytes(w, n, nPackedBytes),
       extractBitSlice: extractBitSlice(w, n),
       memory: memory({ min: 1 << 10 }),
@@ -231,7 +231,7 @@ async function createSimpleScalar(q: bigint, w: number) {
 
   let module = Module({
     exports: {
-      fromPackedBytes: fromPackedBytes(w, n),
+      fromPackedBytes: fromPackedBytes(w, n, nPackedBytes),
       toPackedBytes: toPackedBytes(w, n, nPackedBytes),
       extractBitSlice: extractBitSlice(w, n),
       memory: memory({ min: 1 << 10 }),
