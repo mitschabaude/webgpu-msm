@@ -1,4 +1,4 @@
-import { ALEO_FIELD_MODULUS } from "../params/AleoConstants";
+import { ALEO_FIELD_MODULUS, BLS12_377_SCALAR_FIELD } from "../params/AleoConstants";
 import { BigIntPoint } from "../types";
 
 export interface gpuU32Inputs {
@@ -113,6 +113,16 @@ export const generateRandomFields = (inputSize: number): bigint[] => {
   return randomBigInts;
 };
 
+
+export const generateRandomBls377Scalars = (inputSize: number): bigint[] => {
+  const randomBigInts = [];
+  for (let i = 0; i < inputSize; i++) {
+    randomBigInts.push(createRandomBls377Scalar());
+  }
+
+  return randomBigInts;
+};
+
 export const convertBigIntsToWasmFields = (bigInts: bigint[]): string[] => {
   return bigInts.map(bigInt => bigInt.toString() + 'field');
 };
@@ -123,6 +133,14 @@ const createRandomAleoFieldInt = () => {
     bigIntString += Math.floor(Math.random() * (2**32 - 1));
   }
   return BigInt(bigIntString) % ALEO_FIELD_MODULUS;
+}
+
+const createRandomBls377Scalar = () => {
+  let bigIntString = '';
+  for (let i = 0; i < 8; i++) {
+    bigIntString += Math.floor(Math.random() * (2**32 - 1));
+  }
+  return BigInt(bigIntString) % BLS12_377_SCALAR_FIELD;
 }
 
 export const stripFieldSuffix = (field: string): string => {

@@ -3,7 +3,7 @@ import { Benchmark } from "./Benchmark";
 import {
   bigIntToU32Array,
   bigIntsToBufferLE,
-  generateRandomFields,
+  generateRandomBls377Scalars,
 } from "../reference/webgpu/utils";
 import { BigIntPoint, U32ArrayPoint } from "../reference/types";
 import {
@@ -142,7 +142,7 @@ export const AllBenchmarks: React.FC = () => {
       const pointsBufferLE = bigIntsToBufferLE(xyArray, 384);
       setBufferPoints(pointsBufferLE);
 
-      const newScalars = generateRandomFields(inputSize);
+      const newScalars = generateRandomBls377Scalars(inputSize);
       setBigIntScalars(newScalars);
       const newU32Scalars = newScalars.map((scalar) =>
         bigIntToU32Array(scalar)
