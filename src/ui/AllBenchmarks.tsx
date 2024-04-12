@@ -9,10 +9,8 @@ import { BigIntPoint, U32ArrayPoint } from "../reference/types";
 import {
   wasm_compute_bl12_377_msm_buffer,
   wasm_compute_bls12_377_msm,
-  wasm_compute_msm,
-  wasm_compute_msm_parallel,
 } from "../reference/reference";
-import { compute_msm } from "../submission/submission";
+import { compute_msm } from "../submission/build/web/submission-bls377";
 import CSVExportButton from "./CSVExportButton";
 import { TestCaseDropDown } from "./TestCaseDropDown";
 import { PowersTestCase, TestCase, loadTestCase } from "../test-data/testCases";
